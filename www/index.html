@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planificateur de tournoi de pétanque</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --sable:#F1E9D6;
+  --sable-deep:#E4D8BB;
+  --encre:#2B2B22;
+  --olive:#586842;
+  --olive-dark:#3E4A2F;
+  --ocre:#C68A2E;
+  --terre:#9C4A2E;
+  --acier:#8A8D82;
+  --blanc:#FFFCF4;
+  --danger:#9C3B2E;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--sable);
+  color:var(--encre);
+  font-family:'Work Sans',sans-serif;
+  line-height:1.45;
+  padding:0 0 80px 0;
+}
+
+::selection{background:var(--ocre);color:var(--blanc);}
+
+.wrap{max-width:1100px;margin:0 auto;padding:0 24px;}
+
+/* Header */
+header.top{
+  background:var(--olive-dark);
+  color:var(--sable);
+  padding:36px 0 30px 0;
+  border-bottom:6px solid var(--ocre);
+  position:relative;
+  overflow:hidden;
+}
+header.top::before{
+  content:'';
+  position:absolute;
+  right:-60px;top:-60px;
+  width:220px;height:220px;
+  border:3px dashed rgba(241,233,214,0.15);
+  border-radius:50%;
+}
+header .eyebrow{
+  font-family:'IBM Plex Mono',monospace;
+  text-transform:uppercase;
+  letter-spacing:.14em;
+  font-size:12px;
+  color:var(--ocre);
+  margin-bottom:6px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+header .eyebrow .cochonnet{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--ocre);
+  display:inline-block;
+}
+h1{
+  font-family:'Fraunces',serif;
+  font-weight:700;
+  font-style:italic;
+  font-size:clamp(28px,4vw,42px);
+  margin:0 0 8px 0;
+  letter-spacing:-.01em;
+}
+header p.sub{
+  margin:0;
+  max-width:640px;
+  color:#D9D2BC;
+  font-size:15px;
+}
+
+/* Sections */
+section{padding:34px 0;}
+section h2{
+  font-family:'Fraunces',serif;
+  font-style:italic;
+  font-weight:600;
+  font-size:26px;
+  margin:0 0 4px 0;
+  color:var(--olive-dark);
+}
+section .section-note{
+  font-size:13px;
+  color:var(--acier);
+  margin:0 0 20px 0;
+  font-family:'IBM Plex Mono',monospace;
+}
+
+/* Form card */
+.card{
+  background:var(--blanc);
+  border:1px solid var(--sable-deep);
+  border-radius:4px;
+  padding:28px;
+  box-shadow:0 1px 0 rgba(43,43,34,0.04);
+}
+.grid-form{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:20px 24px;
+}
+label{
+  display:block;
+  font-size:12px;
+  font-family:'IBM Plex Mono',monospace;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:var(--olive-dark);
+  margin-bottom:6px;
+}
+input[type=number],input[type=text],input[type=time],select,textarea{
+  width:100%;
+  padding:10px 12px;
+  border:1.5px solid var(--sable-deep);
+  border-radius:3px;
+  background:var(--sable);
+  font-family:'Work Sans',sans-serif;
+  font-size:15px;
+  color:var(--encre);
+}
+textarea{resize:vertical;min-height:90px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+input:focus,select:focus,textarea:focus{
+  outline:none;
+  border-color:var(--ocre);
+  background:var(--blanc);
+}
+.field-hint{font-size:11.5px;color:var(--acier);margin-top:4px;}
+.field-full{grid-column:1/-1;}
+
+.actions{
+  display:flex;gap:12px;flex-wrap:wrap;
+  margin-top:26px;
+}
+button{
+  font-family:'Work Sans',sans-serif;
+  font-weight:600;
+  font-size:14.5px;
+  padding:12px 22px;
+  border-radius:3px;
+  border:2px solid transparent;
+  cursor:pointer;
+  transition:transform .08s ease, background .15s ease;
+}
+button:active{transform:translateY(1px);}
+.btn-primary{
+  background:var(--olive-dark);
+  color:var(--sable);
+}
+.btn-primary:hover{background:var(--olive);}
+.btn-ghost{
+  background:transparent;
+  border-color:var(--olive-dark);
+  color:var(--olive-dark);
+}
+.btn-ghost:hover{background:var(--sable-deep);}
+
+.error-box{
+  background:#F6E4DE;
+  border:1.5px solid var(--danger);
+  color:var(--danger);
+  padding:12px 16px;
+  border-radius:3px;
+  font-size:14px;
+  margin-top:18px;
+  font-family:'IBM Plex Mono',monospace;
+}
+
+.warning-box{
+  background:#FAF0DC;
+  border:1.5px solid var(--ocre);
+  color:#7A5314;
+  padding:12px 16px;
+  border-radius:3px;
+  font-size:13.5px;
+  margin-bottom:18px;
+  font-family:'IBM Plex Mono',monospace;
+}
+
+/* Groups */
+#groupsOutput{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+  gap:16px;
+}
+.group-card{
+  background:var(--blanc);
+  border:1px solid var(--sable-deep);
+  border-radius:4px;
+  overflow:hidden;
+}
+.group-card .bar{
+  height:6px;
+  background:linear-gradient(90deg,var(--olive),var(--ocre));
+}
+.group-card .body{padding:14px 16px;}
+.group-card h3{
+  font-family:'Fraunces',serif;
+  font-style:italic;
+  font-size:19px;
+  margin:0 0 10px 0;
+  color:var(--olive-dark);
+}
+.group-card ol{list-style:none;margin:0;padding:0;}
+.group-card li{
+  display:flex;align-items:center;gap:8px;
+  padding:5px 0;
+  font-size:14px;
+  border-bottom:1px dotted var(--sable-deep);
+}
+.group-card li:last-child{border-bottom:none;}
+.group-card li .team-name{flex:1;}
+.move-select{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11.5px;
+  padding:3px 4px;
+  border:1px solid var(--sable-deep);
+  border-radius:2px;
+  background:var(--sable);
+  width:auto;
+  flex-shrink:0;
+}
+.group-toolbar{
+  display:flex;gap:12px;flex-wrap:wrap;align-items:center;
+  margin-bottom:18px;
+}
+.boule-dot{
+  width:9px;height:9px;border-radius:50%;
+  background:var(--acier);
+  flex-shrink:0;
+}
+
+/* Schedule */
+.court-icon{
+  display:inline-block;width:34px;height:20px;
+  border:1.5px solid var(--sable);
+  border-radius:2px;
+  position:relative;
+  background:var(--olive);
+  vertical-align:middle;
+  margin-right:6px;
+}
+.court-icon::after{
+  content:'';position:absolute;left:50%;top:50%;
+  width:5px;height:5px;border-radius:50%;
+  background:var(--ocre);
+  transform:translate(-50%,-50%);
+}
+table.schedule{
+  width:100%;
+  border-collapse:collapse;
+  background:var(--blanc);
+  font-size:14px;
+}
+table.schedule th,table.schedule td{
+  border:1px solid var(--sable-deep);
+  padding:10px 12px;
+  text-align:left;
+  vertical-align:top;
+}
+table.schedule thead th{
+  background:var(--olive-dark);
+  color:var(--sable);
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12.5px;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+}
+table.schedule td.time-cell{
+  font-family:'IBM Plex Mono',monospace;
+  font-weight:600;
+  color:var(--olive-dark);
+  white-space:nowrap;
+  background:var(--sable);
+}
+.match-cell .grp-tag{
+  display:inline-block;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10.5px;
+  color:var(--ocre);
+  border:1px solid var(--ocre);
+  border-radius:2px;
+  padding:0 5px;
+  margin-bottom:4px;
+}
+.idle{color:var(--acier);font-style:italic;font-size:13px;}
+.score-row{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:8px;padding:2px 0;
+  font-size:13.5px;
+}
+.score-row input{
+  width:46px;
+  padding:4px 6px;
+  border:1.5px solid var(--sable-deep);
+  border-radius:3px;
+  font-family:'IBM Plex Mono',monospace;
+  text-align:center;
+  background:var(--sable);
+}
+.score-row input:focus{outline:none;border-color:var(--ocre);background:var(--blanc);}
+
+.standings-wrap{margin-top:12px;padding-top:10px;border-top:1px dashed var(--sable-deep);}
+.standings-title{
+  font-family:'IBM Plex Mono',monospace;
+  text-transform:uppercase;
+  font-size:10.5px;letter-spacing:.06em;
+  color:var(--acier);margin-bottom:6px;
+}
+table.standings{width:100%;border-collapse:collapse;font-size:13px;}
+table.standings th,table.standings td{padding:4px 6px;text-align:left;}
+table.standings th{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10.5px;color:var(--acier);
+  border-bottom:1px solid var(--sable-deep);
+  text-transform:uppercase;
+}
+table.standings td.num{font-family:'IBM Plex Mono',monospace;text-align:center;}
+table.standings tr.qualified{background:rgba(198,138,46,0.12);}
+table.standings tr.qualified td:first-child{font-weight:600;color:var(--olive-dark);}
+.bracket-update-btn{margin-bottom:14px;}
+.swiss-round-block{margin-bottom:28px;}
+.swiss-round-title{
+  font-family:'Fraunces',serif;font-style:italic;
+  font-size:20px;color:var(--olive-dark);margin:0 0 10px 0;
+}
+.stats-line{
+  display:flex;gap:24px;flex-wrap:wrap;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:13px;
+  margin-bottom:16px;
+  color:var(--olive-dark);
+}
+.stats-line strong{color:var(--terre);}
+
+/* Bracket */
+.bracket-wrap{overflow-x:auto;padding-bottom:10px;}
+.bracket{display:flex;gap:46px;min-width:max-content;padding:10px 4px;}
+.round-col{display:flex;flex-direction:column;justify-content:space-around;min-width:190px;}
+.round-title{
+  font-family:'IBM Plex Mono',monospace;
+  text-transform:uppercase;
+  font-size:11.5px;
+  letter-spacing:.06em;
+  color:var(--acier);
+  text-align:center;
+  margin-bottom:10px;
+}
+.match-box{
+  position:relative;
+  background:var(--blanc);
+  border:1.5px solid var(--sable-deep);
+  border-radius:3px;
+  margin:14px 0;
+  padding:6px 8px;
+}
+.match-box::after{
+  content:'';
+  position:absolute;
+  right:-46px;top:50%;
+  width:46px;
+  border-top:2px solid var(--acier);
+}
+.round-col:last-child .match-box::after{display:none;}
+.match-box input{
+  width:100%;
+  border:none;
+  background:transparent;
+  font-size:13px;
+  padding:5px 2px;
+  font-family:'Work Sans',sans-serif;
+  color:var(--encre);
+}
+.match-box input:focus{outline:none;background:var(--sable);}
+.match-box .vs{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:9.5px;
+  color:var(--acier);
+  text-align:center;
+  display:block;
+}
+
+footer.note{
+  max-width:1100px;margin:40px auto 0 auto;padding:0 24px;
+  font-size:12.5px;color:var(--acier);
+  font-family:'IBM Plex Mono',monospace;
+}
+
+.hidden{display:none;}
+
+@media(max-width:640px){
+  .bracket{gap:28px;}
+  .round-col{min-width:150px;}
+  .match-box::after{right:-28px;width:28px;}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow"><span class="cochonnet"></span>Outil de tournoi</div>
+    <h1>Planificateur de pétanque</h1>
+    <p class="sub">Renseignez vos paramètres, tirez les groupes au sort, obtenez le planning des matchs réparti sur vos terrains, et préparez le tableau final.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+<section id="formSection">
+  <h2>1. Paramètres du tournoi</h2>
+  <p class="section-note" id="formSectionNote">Le nombre de groupes dépend uniquement du nombre d'équipes et de la taille max par groupe — pas du nombre de terrains.</p>
+  <div class="card">
+    <div class="grid-form">
+      <div class="field-full">
+        <label for="nomTournoi">Nom du tournoi (utilisé pour les sauvegardes)</label>
+        <input type="text" id="nomTournoi" placeholder="Ex : Tournoi de printemps">
+      </div>
+      <div class="field-full">
+        <label for="formatTournoi">Format de la phase de groupes</label>
+        <select id="formatTournoi" onchange="onFormatChange()">
+          <option value="classique" selected>Classique — groupes, chaque équipe joue toutes les autres du groupe</option>
+          <option value="suisse">Suisse — rounds appariés selon le classement, pas de groupes</option>
+        </select>
+      </div>
+      <div>
+        <label for="nbEquipes">Nombre d'équipes</label>
+        <input type="number" id="nbEquipes" min="2" value="16">
+      </div>
+      <div id="fieldMaxParGroupe">
+        <label for="maxParGroupe">Max. équipes / groupe</label>
+        <input type="number" id="maxParGroupe" min="2" value="4">
+        <div class="field-hint" id="groupPreview"></div>
+      </div>
+      <div id="fieldNbRounds" class="hidden">
+        <label for="nbRoundsSuisse">Nombre de rounds</label>
+        <input type="number" id="nbRoundsSuisse" min="1" value="4">
+        <div class="field-hint" id="roundsPreview"></div>
+      </div>
+      <div>
+        <label for="nbTerrains">Nombre de terrains</label>
+        <input type="number" id="nbTerrains" min="1" value="4">
+      </div>
+      <div>
+        <label for="dureeGroupes">Durée phase de groupes (min)</label>
+        <input type="number" id="dureeGroupes" min="10" value="120">
+      </div>
+      <div>
+        <label for="qualifiesParGroupe" id="labelQualifies">Qualifiés par groupe</label>
+        <input type="number" id="qualifiesParGroupe" min="1" value="2" onchange="refreshBracket()">
+      </div>
+      <div>
+        <label for="stadeDepart">Phase éliminatoire à partir de</label>
+        <select id="stadeDepart" onchange="refreshBracket()">
+          <option value="32">1/16 de finale</option>
+          <option value="16">1/8 de finale</option>
+          <option value="8" selected>Quarts de finale</option>
+          <option value="4">Demi-finales</option>
+          <option value="2">Finale</option>
+        </select>
+      </div>
+      <div class="field-full">
+        <label for="nomsEquipes">Noms des équipes (facultatif — une par ligne, sinon "Équipe 1, 2, 3...")</label>
+        <textarea id="nomsEquipes" placeholder="Les Boulistes du Coin&#10;Team Cochonnet&#10;..."></textarea>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn-primary" onclick="genererTournoi()">🎲 Tirer au sort &amp; générer le planning</button>
+      <button class="btn-ghost hidden" id="resetBtn" onclick="location.reload()">Réinitialiser</button>
+      <button class="btn-ghost" onclick="exportState()">💾 Exporter l'état</button>
+      <button class="btn-ghost" onclick="document.getElementById('importFile').click()">📂 Importer un état</button>
+      <input type="file" id="importFile" accept="application/json" style="display:none" onchange="importState(event)">
+    </div>
+    <div id="errorBox"></div>
+  </div>
+</section>
+
+<section id="groupsSection" class="hidden">
+  <h2 id="groupsHeading">2. Groupes</h2>
+  <p class="section-note" id="groupsNote"></p>
+  <div class="group-toolbar" id="classiqueGroupToolbar">
+    <button class="btn-ghost" onclick="remixGroups()">🔀 Nouveau tirage aléatoire des groupes</button>
+    <span class="field-hint">Ou changez le groupe d'une équipe directement via le menu à côté de son nom.</span>
+  </div>
+  <div id="groupsOutput"></div>
+</section>
+
+<section id="scheduleSection" class="hidden">
+  <h2>3. Planning des matchs</h2>
+  <div class="stats-line" id="statsLine"></div>
+  <div id="warningsBox"></div>
+  <div id="classiqueScheduleWrap" style="overflow-x:auto;">
+    <table class="schedule" id="scheduleTable"></table>
+  </div>
+  <div id="swissScheduleWrap" class="hidden">
+    <div id="swissRoundsOutput"></div>
+    <div class="actions" id="swissActionsBar"></div>
+  </div>
+</section>
+
+<section id="bracketSection" class="hidden">
+  <h2>4. Phase éliminatoire</h2>
+  <p class="section-note">Changez « Qualifiés par groupe » ou « Phase éliminatoire à partir de » dans le formulaire ci-dessus à tout moment : le tableau se reconstruit automatiquement avec les équipes actuellement en tête du classement. Vous pouvez aussi modifier chaque champ à la main.</p>
+  <button class="btn-ghost bracket-update-btn" onclick="refreshBracket()">↻ Mettre à jour les qualifiés depuis le classement</button>
+  <div id="bracketWarning"></div>
+  <div class="bracket-wrap">
+    <div class="bracket" id="bracketOutput"></div>
+  </div>
+</section>
+
+<section id="consolanteSection" class="hidden">
+  <h2>5. Tournoi consolante</h2>
+  <p class="section-note">Regroupe les équipes non qualifiées pour le tableau principal, dans l'ordre de leur classement. À activer une fois la phase de groupes terminée (et si possible chiffrée).</p>
+  <div class="grid-form" style="max-width:460px;margin-bottom:18px;">
+    <div>
+      <label for="consolanteEnabled">Consolante</label>
+      <select id="consolanteEnabled" onchange="onConsolanteToggle()">
+        <option value="off" selected>Désactivée</option>
+        <option value="on">Activée</option>
+      </select>
+    </div>
+    <div id="fieldConsolanteStage" class="hidden">
+      <label for="stadeDepartConsolante">Phase consolante à partir de</label>
+      <select id="stadeDepartConsolante" onchange="refreshConsolanteBracket()">
+        <option value="32">1/16 de finale</option>
+        <option value="16">1/8 de finale</option>
+        <option value="8">Quarts de finale</option>
+        <option value="4" selected>Demi-finales</option>
+        <option value="2">Finale</option>
+      </select>
+    </div>
+  </div>
+  <div id="consolanteContent" class="hidden">
+    <button class="btn-ghost bracket-update-btn" onclick="refreshConsolanteBracket()">↻ Mettre à jour la consolante depuis le classement</button>
+    <div id="consolanteWarning"></div>
+    <div class="bracket-wrap">
+      <div class="bracket" id="consolanteOutput"></div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<footer class="note">Astuce : utilisez « 🔀 Nouveau tirage » pour remélanger les groupes automatiquement, le menu déroulant à côté de chaque équipe pour un déplacement manuel, et « 💾 Exporter l'état » pour sauvegarder votre progression (groupes, scores, tableau final) dans un fichier que vous pourrez réimporter plus tard.</footer>
+
+<script>
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function letterLabel(i){
+  let s='';
+  i++;
+  while(i>0){
+    const r=(i-1)%26;
+    s=String.fromCharCode(65+r)+s;
+    i=Math.floor((i-1)/26);
+  }
+  return s;
+}
+
+// classic round-robin circle method. teams: array (strings), returns rounds: array of arrays of [t1,t2]
+function roundRobin(teams){
+  let arr = teams.slice();
+  if(arr.length % 2 !== 0) arr.push(null);
+  const n = arr.length;
+  const rounds = n-1;
+  const half = n/2;
+  const schedule = [];
+  for(let r=0;r<rounds;r++){
+    const roundMatches=[];
+    for(let i=0;i<half;i++){
+      const t1=arr[i], t2=arr[n-1-i];
+      if(t1!==null && t2!==null) roundMatches.push([t1,t2]);
+    }
+    schedule.push(roundMatches);
+    // rotate: fix arr[0], move last element to position 1
+    const fixed = arr[0];
+    const rest = arr.slice(1);
+    const last = rest.pop();
+    arr = [fixed, last, ...rest];
+  }
+  return schedule;
+}
+
+// standard bracket seed order, e.g. for n=8: [1,8,4,5,2,7,3,6]
+function seedOrder(n){
+  let seeds=[1,2];
+  const rounds = Math.log2(n);
+  for(let i=1;i<rounds;i++){
+    const l = seeds.length*2+1;
+    const newSeeds=[];
+    for(const s of seeds){
+      newSeeds.push(s);
+      newSeeds.push(l-s);
+    }
+    seeds=newSeeds;
+  }
+  return seeds;
+}
+
+function stageLabel(size){
+  const map={32:'1/16 de finale',16:'1/8 de finale',8:'Quarts de finale',4:'Demi-finales',2:'Finale',1:'Champion'};
+  return map[size] || (size+' équipes');
+}
+
+// stable identity for a pairing, independent of which slot/court it ends up on —
+// this is what lets scores survive a reshuffle of groups/terrains
+function matchKey(groupLabel, team1, team2){
+  const pair = [team1, team2].sort();
+  return groupLabel+'::'+pair[0]+'::'+pair[1];
+}
+
+function escAttr(str){
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// dispatches to the right generator depending on the chosen format
+function genererTournoi(){
+  const format = document.getElementById('formatTournoi').value;
+  if(format === 'suisse') return genererTournoiSuisse();
+  return genererTournoiClassique();
+}
+
+function genererTournoiClassique(){
+  const errorBox = document.getElementById('errorBox');
+  errorBox.innerHTML='';
+
+  const N = parseInt(document.getElementById('nbEquipes').value);
+  const M = parseInt(document.getElementById('maxParGroupe').value);
+  const C = parseInt(document.getElementById('nbTerrains').value);
+  const T = parseFloat(document.getElementById('dureeGroupes').value);
+  const Q = parseInt(document.getElementById('qualifiesParGroupe').value);
+
+  const errs=[];
+  if(!N || N<2) errs.push("Le nombre d'équipes doit être d'au moins 2.");
+  if(!M || M<2) errs.push("Le nombre max par groupe doit être d'au moins 2.");
+  if(M>N) errs.push("Le max par groupe ne peut pas dépasser le nombre d'équipes.");
+  if(!C || C<1) errs.push("Il faut au moins 1 terrain.");
+  if(!T || T<=0) errs.push("La durée de la phase de groupes doit être positive.");
+  if(!Q || Q<1) errs.push("Le nombre de qualifiés par groupe doit être d'au moins 1.");
+
+  if(errs.length){
+    errorBox.innerHTML = '<div class="error-box">'+errs.join('<br>')+'</div>';
+    return;
+  }
+
+  // team names
+  const namesRaw = document.getElementById('nomsEquipes').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  let names=[];
+  for(let i=0;i<N;i++){
+    names.push(namesRaw[i] || ('Équipe '+(i+1)));
+  }
+  names = shuffle(names);
+
+  // groups
+  const G = Math.ceil(N/M);
+  const base = Math.floor(N/G);
+  const rem = N%G;
+  const groups=[];
+  let idx=0;
+  for(let g=0; g<G; g++){
+    const size = base + (g<rem?1:0);
+    groups.push({label: letterLabel(g), teams: names.slice(idx, idx+size)});
+    idx += size;
+  }
+
+  // this is a brand new draw: previous scores / bracket entries no longer apply
+  window.scoresStore = {};
+  window.bracketStore = {};
+  window.saveCounter = 0;
+  window.lastGroups = groups;
+  window.tournamentFormat = 'classique';
+  window.swissRounds = null;
+
+  buildScheduleAndRender();
+}
+
+// reshuffle which teams sit in which group (fresh even distribution), keeping
+// all other settings — used by "Nouveau tirage aléatoire des groupes"
+function remixGroups(){
+  if(!window.lastGroups) return;
+  const M = parseInt(document.getElementById('maxParGroupe').value);
+  if(!M || M<2) return;
+
+  let allTeams=[];
+  window.lastGroups.forEach(g=> allTeams.push(...g.teams));
+  allTeams = shuffle(allTeams);
+
+  const N = allTeams.length;
+  const G = Math.ceil(N/M);
+  const base = Math.floor(N/G);
+  const rem = N%G;
+  const newGroups=[];
+  let idx=0;
+  for(let g=0; g<G; g++){
+    const size = base + (g<rem?1:0);
+    newGroups.push({label: letterLabel(g), teams: allTeams.slice(idx, idx+size)});
+    idx += size;
+  }
+  window.lastGroups = newGroups;
+  buildScheduleAndRender();
+}
+
+// move a single team to a different group via its dropdown
+function moveTeamManually(selectEl){
+  const team = selectEl.dataset.team;
+  const from = selectEl.dataset.from;
+  const to = selectEl.value;
+  if(to === from) return;
+  const groups = window.lastGroups;
+  const fromGroup = groups.find(g=>g.label===from);
+  const toGroup = groups.find(g=>g.label===to);
+  if(!fromGroup || !toGroup) return;
+  fromGroup.teams = fromGroup.teams.filter(t=>t!==team);
+  toGroup.teams.push(team);
+  buildScheduleAndRender();
+}
+
+// rebuilds round-robin schedule, court assignment, standings and bracket
+// skeleton from whatever is currently in window.lastGroups — called after
+// initial generation, after a remix, after a manual move, and after import
+function buildScheduleAndRender(){
+  const groups = window.lastGroups;
+  if(!groups) return;
+
+  const C = parseInt(document.getElementById('nbTerrains').value);
+  const T = parseFloat(document.getElementById('dureeGroupes').value);
+  const Q = parseInt(document.getElementById('qualifiesParGroupe').value);
+  const stageSize = parseInt(document.getElementById('stadeDepart').value);
+  const M = parseInt(document.getElementById('maxParGroupe').value);
+  const N = groups.reduce((s,g)=>s+g.teams.length,0);
+  const G = groups.length;
+
+  window.scoresStore = window.scoresStore || {};
+  window.bracketStore = window.bracketStore || {};
+  window.lastQ = Q;
+  window.lastStageSize = stageSize;
+  window.matchIndex = {};
+
+  // round robin per group
+  groups.forEach(g=>{ g.rounds = roundRobin(g.teams); });
+  const maxRounds = Math.max(...groups.map(g=>g.rounds.length));
+
+  // build global slots — greedy assignment so each team rotates across as many
+  // different terrains as possible over the course of the tournament
+  const slots=[];
+  const courtUsage = {};
+  groups.forEach(g=> g.teams.forEach(t=> courtUsage[t] = new Array(C).fill(0)));
+
+  for(let r=0;r<maxRounds;r++){
+    let matchesThisRound=[];
+    groups.forEach(g=>{
+      if(r<g.rounds.length){
+        g.rounds[r].forEach(m=>{
+          matchesThisRound.push({team1:m[0], team2:m[1], groupLabel:g.label});
+        });
+      }
+    });
+    matchesThisRound = shuffle(matchesThisRound);
+
+    for(let i=0;i<matchesThisRound.length;i+=C){
+      const chunk = matchesThisRound.slice(i,i+C);
+      const slot = new Array(C).fill(null);
+      let availableCourts = [...Array(C).keys()];
+      chunk.forEach(m=>{
+        let bestCost = Infinity, bestCourts=[];
+        availableCourts.forEach(c=>{
+          const cost = courtUsage[m.team1][c] + courtUsage[m.team2][c];
+          if(cost < bestCost){ bestCost = cost; bestCourts=[c]; }
+          else if(cost === bestCost){ bestCourts.push(c); }
+        });
+        const chosen = bestCourts[Math.floor(Math.random()*bestCourts.length)];
+        slot[chosen] = m;
+        courtUsage[m.team1][chosen]++;
+        courtUsage[m.team2][chosen]++;
+        availableCourts = availableCourts.filter(c=>c!==chosen);
+      });
+      slots.push(slot);
+    }
+  }
+
+  const totalSlots = slots.length;
+  const matchDuration = Math.max(1, Math.round(T/totalSlots));
+  const totalUsed = matchDuration*totalSlots;
+
+  // ---- render groups (with manual move dropdowns) ----
+  document.getElementById('groupsSection').classList.remove('hidden');
+  document.getElementById('scheduleSection').classList.remove('hidden');
+  document.getElementById('bracketSection').classList.remove('hidden');
+  document.getElementById('consolanteSection').classList.remove('hidden');
+  document.getElementById('resetBtn').classList.remove('hidden');
+  document.getElementById('groupsHeading').textContent = '2. Groupes';
+  document.getElementById('classiqueGroupToolbar').classList.remove('hidden');
+  document.getElementById('classiqueScheduleWrap').classList.remove('hidden');
+  document.getElementById('swissScheduleWrap').classList.add('hidden');
+
+  document.getElementById('groupsNote').textContent =
+    N+' équipes réparties en '+G+' groupe'+(G>1?'s':'')+' (max '+M+' par groupe) — chaque équipe affronte toutes les autres de son groupe.';
+
+  const groupsOutput = document.getElementById('groupsOutput');
+  groupsOutput.innerHTML = groups.map(g=>`
+    <div class="group-card">
+      <div class="bar"></div>
+      <div class="body">
+        <h3>Groupe ${g.label}</h3>
+        <ol>
+          ${g.teams.map(t=>`
+            <li>
+              <span class="boule-dot"></span>
+              <span class="team-name">${escAttr(t)}</span>
+              <select class="move-select" data-team="${escAttr(t)}" data-from="${g.label}">
+                ${groups.map(gg=>`<option value="${gg.label}" ${gg.label===g.label?'selected':''}>${gg.label}</option>`).join('')}
+              </select>
+            </li>`).join('')}
+        </ol>
+        <div class="standings-wrap">
+          <div class="standings-title">Classement</div>
+          <table class="standings" id="standings-${g.label}"></table>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  groupsOutput.querySelectorAll('.move-select').forEach(sel=>{
+    sel.addEventListener('change', ()=> moveTeamManually(sel));
+  });
+
+  // ---- render schedule ----
+  const statsLine = document.getElementById('statsLine');
+  statsLine.innerHTML = `
+    <span>Durée / match : <strong>${matchDuration} min</strong></span>
+    <span>Créneaux nécessaires : <strong>${totalSlots}</strong></span>
+    <span>Durée totale utilisée : <strong>${totalUsed} min</strong> (demandé : ${T} min)</span>
+  `;
+
+  const warningsBox = document.getElementById('warningsBox');
+  warningsBox.innerHTML = Math.abs(totalUsed - T) > matchDuration
+    ? `<div class="warning-box">L'arrondi du temps par match donne une durée totale légèrement différente de celle demandée. Ajustez la durée saisie si besoin de coller exactement.</div>`
+    : '';
+
+  const table = document.getElementById('scheduleTable');
+  let theadCols = '<th>Créneau</th>';
+  for(let c=0;c<C;c++){ theadCols += `<th><span class="court-icon"></span>Terrain ${c+1}</th>`; }
+  let rows='';
+  slots.forEach((slot,i)=>{
+    const label = 'Créneau '+(i+1);
+    let cells='';
+    for(let c=0;c<C;c++){
+      const m = slot[c];
+      if(m){
+        const key = matchKey(m.groupLabel, m.team1, m.team2);
+        window.matchIndex[key] = {group:m.groupLabel, team1:m.team1, team2:m.team2};
+        const existing = window.scoresStore[key] || {};
+        const v1 = existing[m.team1] !== undefined ? existing[m.team1] : '';
+        const v2 = existing[m.team2] !== undefined ? existing[m.team2] : '';
+        cells += `<td class="match-cell">
+          <span class="grp-tag">Grp ${m.groupLabel}</span>
+          <div class="score-row"><span>${escAttr(m.team1)}</span><input type="number" min="0" class="score-input" data-key="${escAttr(key)}" data-team="${escAttr(m.team1)}" value="${escAttr(v1)}"></div>
+          <div class="score-row"><span>${escAttr(m.team2)}</span><input type="number" min="0" class="score-input" data-key="${escAttr(key)}" data-team="${escAttr(m.team2)}" value="${escAttr(v2)}"></div>
+        </td>`;
+      } else {
+        cells += `<td class="idle">Terrain libre</td>`;
+      }
+    }
+    rows += `<tr><td class="time-cell">${label}</td>${cells}</tr>`;
+  });
+  table.innerHTML = `<thead><tr>${theadCols}</tr></thead><tbody>${rows}</tbody>`;
+  table.querySelectorAll('.score-input').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      const key = inp.dataset.key, team = inp.dataset.team;
+      window.scoresStore[key] = window.scoresStore[key] || {};
+      window.scoresStore[key][team] = inp.value;
+      updateStandings();
+    });
+  });
+
+  renderBracketSkeleton();
+
+  updateStandings();
+  document.getElementById('groupsSection').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// builds the elimination bracket skeleton from window.lastGroups / window.lastQ /
+// window.lastStageSize — shared by classique (called from buildScheduleAndRender)
+// and suisse (called from renderSwiss)
+function renderBracketSkeleton(){
+  const groups = window.lastGroups || [];
+  const Q = window.lastQ;
+  const stageSize = window.lastStageSize;
+
+  const seedList=[];
+  for(let rank=0; rank<Q; rank++){
+    groups.forEach(g=>{
+      if(rank < g.teams.length){
+        const prefix = groups.length>1 ? ((rank===0?'1er':(rank+1)+'e')+' Groupe '+g.label) : ((rank===0?'1er':(rank+1)+'e')+' au classement');
+        seedList.push(prefix);
+      }
+    });
+  }
+  const bracketWarning = document.getElementById('bracketWarning');
+  let effectiveList = seedList.slice();
+  let warnHtml='';
+  if(effectiveList.length > stageSize){
+    warnHtml = `<div class="warning-box">${effectiveList.length} équipes qualifiées pour un tableau de ${stageSize} places (${stageLabel(stageSize)}). Seules les ${stageSize} premières places du tirage sont affichées ci-dessous — augmentez le stade de départ ou réduisez le nombre de qualifiés.</div>`;
+    effectiveList = effectiveList.slice(0, stageSize);
+  } else if(effectiveList.length < stageSize){
+    warnHtml = `<div class="warning-box">${effectiveList.length} équipes qualifiées pour un tableau de ${stageSize} places (${stageLabel(stageSize)}) — les places restantes sont marquées BYE (qualification directe).</div>`;
+    while(effectiveList.length < stageSize) effectiveList.push('BYE');
+  }
+  bracketWarning.innerHTML = warnHtml;
+
+  const order = seedOrder(stageSize);
+  const orderedSeeds = order.map(s=>effectiveList[s-1]);
+
+  const nRounds = Math.log2(stageSize);
+  const bracketOutput = document.getElementById('bracketOutput');
+  let roundsHtml='';
+  let currentSize = stageSize;
+  for(let ri=0; ri<nRounds; ri++){
+    const nMatches = currentSize/2;
+    let matchesHtml='';
+    for(let mi=0; mi<nMatches; mi++){
+      const bid1 = `bk_${currentSize}_${mi}_0`;
+      const bid2 = `bk_${currentSize}_${mi}_1`;
+      const default1 = ri===0 ? orderedSeeds[mi*2] : '';
+      const default2 = ri===0 ? orderedSeeds[mi*2+1] : '';
+      const v1 = window.bracketStore[bid1] !== undefined ? window.bracketStore[bid1] : default1;
+      const v2 = window.bracketStore[bid2] !== undefined ? window.bracketStore[bid2] : default2;
+      matchesHtml += `
+        <div class="match-box">
+          <input type="text" class="bracket-input" data-bid="${bid1}" value="${escAttr(v1)}" placeholder="À définir">
+          <span class="vs">vs</span>
+          <input type="text" class="bracket-input" data-bid="${bid2}" value="${escAttr(v2)}" placeholder="À définir">
+        </div>`;
+    }
+    roundsHtml += `<div class="round-col"><div class="round-title">${stageLabel(currentSize)}</div>${matchesHtml}</div>`;
+    currentSize = currentSize/2;
+  }
+  const champBid = 'bk_champion';
+  const champVal = window.bracketStore[champBid] !== undefined ? window.bracketStore[champBid] : '';
+  roundsHtml += `<div class="round-col"><div class="round-title">Champion</div>
+    <div class="match-box"><input type="text" class="bracket-input" data-bid="${champBid}" value="${escAttr(champVal)}" placeholder="🏆 Vainqueur"></div></div>`;
+  bracketOutput.innerHTML = roundsHtml;
+  bracketOutput.querySelectorAll('.bracket-input').forEach(inp=>{
+    inp.addEventListener('input', ()=>{ window.bracketStore[inp.dataset.bid] = inp.value; });
+  });
+}
+
+// ============ SWISS FORMAT ============
+
+function genererTournoiSuisse(){
+  const errorBox = document.getElementById('errorBox');
+  errorBox.innerHTML='';
+
+  const N = parseInt(document.getElementById('nbEquipes').value);
+  const C = parseInt(document.getElementById('nbTerrains').value);
+  const T = parseFloat(document.getElementById('dureeGroupes').value);
+  const Q = parseInt(document.getElementById('qualifiesParGroupe').value);
+  const nRoundsPlanned = parseInt(document.getElementById('nbRoundsSuisse').value);
+
+  const errs=[];
+  if(!N || N<2) errs.push("Le nombre d'équipes doit être d'au moins 2.");
+  if(!C || C<1) errs.push("Il faut au moins 1 terrain.");
+  if(!T || T<=0) errs.push("La durée de la phase de groupes doit être positive.");
+  if(!Q || Q<1) errs.push("Le nombre de qualifiés doit être d'au moins 1.");
+  if(Q>N) errs.push("Le nombre de qualifiés ne peut pas dépasser le nombre d'équipes.");
+  if(!nRoundsPlanned || nRoundsPlanned<1) errs.push("Il faut au moins 1 round.");
+
+  if(errs.length){
+    errorBox.innerHTML = '<div class="error-box">'+errs.join('<br>')+'</div>';
+    return;
+  }
+
+  const namesRaw = document.getElementById('nomsEquipes').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  let names=[];
+  for(let i=0;i<N;i++){
+    names.push(namesRaw[i] || ('Équipe '+(i+1)));
+  }
+  names = shuffle(names);
+
+  window.tournamentFormat = 'suisse';
+  window.lastGroups = [{label:'Général', teams:names}];
+  window.lastQ = Q;
+  window.lastStageSize = parseInt(document.getElementById('stadeDepart').value);
+  window.scoresStore = {};
+  window.bracketStore = {};
+  window.saveCounter = 0;
+  window.swissRounds = [];
+  window.swissCourtUsage = {};
+  names.forEach(t=> window.swissCourtUsage[t] = new Array(C).fill(0));
+  window.swissHadBye = new Set();
+  window.swissPlannedRounds = nRoundsPlanned;
+  window.swissC = C;
+
+  const matchesPerRound = Math.floor(N/2);
+  const slotsPerRound = Math.max(1, Math.ceil(matchesPerRound / C));
+  const totalSlotsEstimate = nRoundsPlanned * slotsPerRound;
+  window.swissMatchDuration = Math.max(1, Math.round(T/totalSlotsEstimate));
+
+  generateSwissRound();
+}
+
+// pairs the next swiss round: random for round 1, else by current standings,
+// avoiding rematches where possible; handles a bye when the team count is odd
+function pairSwissRound(){
+  const teams = window.lastGroups[0].teams.slice();
+
+  let order;
+  if(window.swissRounds.length === 0){
+    order = shuffle(teams);
+  } else {
+    const standings = computeStandings()['Général'];
+    order = standings.map(s=>s.team);
+  }
+
+  const played = {};
+  teams.forEach(t=> played[t] = new Set());
+  window.swissRounds.forEach(r=> r.matches.forEach(m=>{
+    played[m.team1].add(m.team2);
+    played[m.team2].add(m.team1);
+  }));
+
+  let pairOrder = order.slice();
+  let byeTeam = null;
+  if(pairOrder.length % 2 !== 0){
+    for(let i=pairOrder.length-1;i>=0;i--){
+      if(!window.swissHadBye.has(pairOrder[i])){ byeTeam = pairOrder[i]; break; }
+    }
+    if(!byeTeam) byeTeam = pairOrder[pairOrder.length-1];
+    window.swissHadBye.add(byeTeam);
+    pairOrder = pairOrder.filter(t=>t!==byeTeam);
+  }
+
+  const matches=[];
+  const remaining = pairOrder.slice();
+  while(remaining.length>0){
+    const t1 = remaining.shift();
+    let idx = remaining.findIndex(t2=>!played[t1].has(t2));
+    if(idx===-1) idx = 0; // no unplayed opponent left: allow a rematch as a fallback
+    const t2 = remaining.splice(idx,1)[0];
+    matches.push({team1:t1, team2:t2});
+  }
+  return {matches, byeTeam};
+}
+
+// distributes a round's matches across courts, favoring courts least used by
+// the two teams involved so far (same court-diversity heuristic as classique)
+function assignCourtsToMatches(matches){
+  const C = window.swissC;
+  const slots=[];
+  let remaining = shuffle(matches.slice());
+  while(remaining.length>0){
+    const chunk = remaining.splice(0, C);
+    const slot = new Array(C).fill(null);
+    let availableCourts = [...Array(C).keys()];
+    chunk.forEach(m=>{
+      let bestCost=Infinity, bestCourts=[];
+      availableCourts.forEach(c=>{
+        const cost = window.swissCourtUsage[m.team1][c] + window.swissCourtUsage[m.team2][c];
+        if(cost<bestCost){ bestCost=cost; bestCourts=[c]; }
+        else if(cost===bestCost){ bestCourts.push(c); }
+      });
+      const chosen = bestCourts[Math.floor(Math.random()*bestCourts.length)];
+      slot[chosen] = m;
+      window.swissCourtUsage[m.team1][chosen]++;
+      window.swissCourtUsage[m.team2][chosen]++;
+      availableCourts = availableCourts.filter(c=>c!==chosen);
+    });
+    slots.push(slot);
+  }
+  return slots;
+}
+
+function generateSwissRound(){
+  const {matches, byeTeam} = pairSwissRound();
+  const slots = assignCourtsToMatches(matches);
+  window.swissRounds.push({matches, byeTeam, slots});
+  renderSwiss();
+}
+
+function renderSwiss(){
+  document.getElementById('groupsSection').classList.remove('hidden');
+  document.getElementById('scheduleSection').classList.remove('hidden');
+  document.getElementById('bracketSection').classList.remove('hidden');
+  document.getElementById('consolanteSection').classList.remove('hidden');
+  document.getElementById('resetBtn').classList.remove('hidden');
+  document.getElementById('groupsHeading').textContent = '2. Classement général';
+  document.getElementById('classiqueGroupToolbar').classList.add('hidden');
+  document.getElementById('classiqueScheduleWrap').classList.add('hidden');
+  document.getElementById('swissScheduleWrap').classList.remove('hidden');
+
+  const N = window.lastGroups[0].teams.length;
+  document.getElementById('groupsNote').textContent =
+    N+' équipes en système suisse — '+window.swissPlannedRounds+' round'+(window.swissPlannedRounds>1?'s':'')+' prévu'+(window.swissPlannedRounds>1?'s':'')+', chaque équipe est réappariée selon son classement après chaque round.';
+
+  document.getElementById('groupsOutput').innerHTML = `
+    <div class="group-card">
+      <div class="bar"></div>
+      <div class="body">
+        <h3>Classement général</h3>
+        <table class="standings" id="standings-Général"></table>
+      </div>
+    </div>`;
+
+  window.matchIndex = {};
+  let totalSlotsSoFar = 0;
+  let roundsHtml='';
+  window.swissRounds.forEach((round, ri)=>{
+    totalSlotsSoFar += round.slots.length;
+    let theadCols = '<th>Créneau</th>';
+    for(let c=0;c<window.swissC;c++){ theadCols += `<th><span class="court-icon"></span>Terrain ${c+1}</th>`; }
+    let rows='';
+    round.slots.forEach((slot,si)=>{
+      let cells='';
+      for(let c=0;c<window.swissC;c++){
+        const m = slot[c];
+        if(m){
+          const key = 'Général::R'+ri+'::'+[m.team1,m.team2].sort().join('::');
+          window.matchIndex[key] = {group:'Général', team1:m.team1, team2:m.team2};
+          const existing = window.scoresStore[key] || {};
+          const v1 = existing[m.team1] !== undefined ? existing[m.team1] : '';
+          const v2 = existing[m.team2] !== undefined ? existing[m.team2] : '';
+          cells += `<td class="match-cell">
+            <div class="score-row"><span>${escAttr(m.team1)}</span><input type="number" min="0" class="score-input" data-key="${escAttr(key)}" data-team="${escAttr(m.team1)}" value="${escAttr(v1)}"></div>
+            <div class="score-row"><span>${escAttr(m.team2)}</span><input type="number" min="0" class="score-input" data-key="${escAttr(key)}" data-team="${escAttr(m.team2)}" value="${escAttr(v2)}"></div>
+          </td>`;
+        } else {
+          cells += `<td class="idle">Terrain libre</td>`;
+        }
+      }
+      rows += `<tr><td class="time-cell">Créneau ${si+1}</td>${cells}</tr>`;
+    });
+    const byeNote = round.byeTeam
+      ? `<p class="field-hint">Exempt ce round : ${escAttr(round.byeTeam)} (qualifiée d'office pour ce tour)</p>`
+      : '';
+    roundsHtml += `
+      <div class="swiss-round-block">
+        <h3 class="swiss-round-title">Round ${ri+1}</h3>
+        ${byeNote}
+        <div style="overflow-x:auto;"><table class="schedule">
+          <thead><tr>${theadCols}</tr></thead><tbody>${rows}</tbody>
+        </table></div>
+      </div>`;
+  });
+  document.getElementById('swissRoundsOutput').innerHTML = roundsHtml;
+  document.getElementById('swissRoundsOutput').querySelectorAll('.score-input').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      const key = inp.dataset.key, team = inp.dataset.team;
+      window.scoresStore[key] = window.scoresStore[key] || {};
+      window.scoresStore[key][team] = inp.value;
+      updateStandings();
+    });
+  });
+
+  const matchDuration = window.swissMatchDuration;
+  document.getElementById('statsLine').innerHTML = `
+    <span>Durée / match : <strong>${matchDuration} min</strong></span>
+    <span>Rounds générés : <strong>${window.swissRounds.length} / ${window.swissPlannedRounds}</strong></span>
+    <span>Créneaux utilisés : <strong>${totalSlotsSoFar}</strong></span>
+  `;
+  document.getElementById('warningsBox').innerHTML='';
+
+  const actionsBar = document.getElementById('swissActionsBar');
+  actionsBar.innerHTML = window.swissRounds.length < window.swissPlannedRounds
+    ? `<button class="btn-primary" onclick="generateSwissRound()">▶ Générer le round ${window.swissRounds.length+1}</button>`
+    : `<button class="btn-ghost" onclick="generateSwissRound()">➕ Ajouter un round supplémentaire</button>`;
+
+  renderBracketSkeleton();
+  updateStandings();
+  document.getElementById('groupsSection').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// compute standings per group from currently entered scores
+// returns { groupLabel: [ {team, wins, diff, played}, ... sorted ] }
+function computeStandings(){
+  const statsByGroup = {};
+  (window.lastGroups||[]).forEach(g=>{
+    statsByGroup[g.label] = {};
+    g.teams.forEach(t=> statsByGroup[g.label][t] = {team:t, wins:0, diff:0, played:0});
+  });
+
+  Object.entries(window.matchIndex||{}).forEach(([key, info])=>{
+    const entry = (window.scoresStore||{})[key];
+    if(!entry) return;
+    const v1 = parseInt(entry[info.team1]);
+    const v2 = parseInt(entry[info.team2]);
+    if(isNaN(v1) || isNaN(v2)) return;
+    const grp = statsByGroup[info.group];
+    if(!grp || !grp[info.team1] || !grp[info.team2]) return;
+    grp[info.team1].played++; grp[info.team2].played++;
+    grp[info.team1].diff += (v1-v2);
+    grp[info.team2].diff += (v2-v1);
+    if(v1>v2) grp[info.team1].wins++;
+    else if(v2>v1) grp[info.team2].wins++;
+  });
+
+  const result = {};
+  Object.entries(statsByGroup).forEach(([label, teams])=>{
+    const arr = Object.values(teams);
+    arr.sort((a,b)=> b.wins-a.wins || b.diff-a.diff || a.team.localeCompare(b.team));
+    result[label] = arr;
+  });
+  return result;
+}
+
+function updateStandings(){
+  if(!window.lastGroups) return;
+  const standings = computeStandings();
+  const Q = window.lastQ || 0;
+  Object.entries(standings).forEach(([label, arr])=>{
+    const table = document.getElementById('standings-'+label);
+    if(!table) return;
+    const rows = arr.map((t,i)=>`
+      <tr class="${i<Q?'qualified':''}">
+        <td>${i+1}. ${escAttr(t.team)}</td>
+        <td class="num">${t.played}</td>
+        <td class="num">${t.wins}</td>
+        <td class="num">${t.diff>0?'+':''}${t.diff}</td>
+      </tr>`).join('');
+    table.innerHTML = `<thead><tr><th>Équipe</th><th class="num">J</th><th class="num">V</th><th class="num">Diff</th></tr></thead><tbody>${rows}</tbody>`;
+  });
+}
+
+// re-reads the current "qualifiés" / "stade de départ" fields (even if changed
+// after the group phase was generated and scored), rebuilds the bracket to the
+// right size, and refills it with the teams currently leading the standings
+function refreshBracket(){
+  if(!window.lastGroups) return; // nothing generated yet
+
+  const newQ = parseInt(document.getElementById('qualifiesParGroupe').value);
+  const newStageSize = parseInt(document.getElementById('stadeDepart').value);
+  if(newQ && newQ>0) window.lastQ = newQ;
+  if(newStageSize && newStageSize>0) window.lastStageSize = newStageSize;
+
+  renderBracketSkeleton();
+  fillBracketFromStandings();
+  updateStandings(); // re-highlight qualified rows against the new Q
+}
+
+function fillBracketFromStandings(){
+  if(!window.lastGroups){ return; }
+  const standings = computeStandings();
+  const Q = window.lastQ;
+  const stageSize = window.lastStageSize;
+
+  const seedList=[];
+  for(let rank=0; rank<Q; rank++){
+    window.lastGroups.forEach(g=>{
+      const arr = standings[g.label];
+      if(arr && rank < arr.length){
+        seedList.push(arr[rank].team);
+      }
+    });
+  }
+
+  let effectiveList = seedList.slice();
+  const bracketWarning = document.getElementById('bracketWarning');
+  let warnHtml='';
+  if(effectiveList.length > stageSize){
+    warnHtml = `<div class="warning-box">${effectiveList.length} équipes qualifiées pour un tableau de ${stageSize} places. Seules les ${stageSize} premières places (classement) sont injectées.</div>`;
+    effectiveList = effectiveList.slice(0, stageSize);
+  } else if(effectiveList.length < stageSize){
+    warnHtml = `<div class="warning-box">${effectiveList.length} équipes disponibles pour un tableau de ${stageSize} places — les places restantes sont marquées BYE.</div>`;
+    while(effectiveList.length < stageSize) effectiveList.push('BYE');
+  }
+  bracketWarning.innerHTML = warnHtml;
+
+  const order = seedOrder(stageSize);
+  const orderedSeeds = order.map(s=>effectiveList[s-1]);
+  orderedSeeds.forEach((name, position)=>{
+    const mi = Math.floor(position/2);
+    const slotIdx = position%2;
+    const bid = `bk_${stageSize}_${mi}_${slotIdx}`;
+    window.bracketStore[bid] = name;
+    const el = document.querySelector(`[data-bid="${bid}"]`);
+    if(el) el.value = name;
+  });
+}
+
+// ============ CONSOLANTE (parallel bracket for non-qualified teams) ============
+
+function onConsolanteToggle(){
+  const enabled = document.getElementById('consolanteEnabled').value === 'on';
+  document.getElementById('fieldConsolanteStage').classList.toggle('hidden', !enabled);
+  document.getElementById('consolanteContent').classList.toggle('hidden', !enabled);
+  if(enabled) refreshConsolanteBracket();
+}
+
+function refreshConsolanteBracket(){
+  if(!window.lastGroups) return;
+  if(document.getElementById('consolanteEnabled').value !== 'on') return;
+  const stageSize = parseInt(document.getElementById('stadeDepartConsolante').value);
+  if(stageSize && stageSize>0) window.lastConsolanteStageSize = stageSize;
+  renderConsolanteSkeleton();
+  fillConsolanteFromStandings();
+}
+
+// builds the "who's in the consolante" list: every team ranked below the
+// qualification cutoff (rank >= Q) in its group / the general standings,
+// ordered rank-major across groups just like the main bracket's seed list
+function consolantePool(useActualNames){
+  const groups = window.lastGroups || [];
+  const Q = window.lastQ || 0;
+  const maxLen = Math.max(0, ...groups.map(g=>g.teams.length));
+  const standings = useActualNames ? computeStandings() : null;
+  const pool=[];
+  for(let rank=Q; rank<maxLen; rank++){
+    groups.forEach(g=>{
+      if(rank < g.teams.length){
+        if(useActualNames){
+          const arr = standings[g.label];
+          if(arr && rank < arr.length) pool.push(arr[rank].team);
+        } else {
+          const prefix = groups.length>1 ? ((rank+1)+'e Groupe '+g.label) : ((rank+1)+'e au classement');
+          pool.push(prefix);
+        }
+      }
+    });
+  }
+  return pool;
+}
+
+function renderConsolanteSkeleton(){
+  const stageSize = window.lastConsolanteStageSize;
+  const consolanteWarning = document.getElementById('consolanteWarning');
+  const consolanteOutput = document.getElementById('consolanteOutput');
+  if(!stageSize){ return; }
+
+  const seedList = consolantePool(false);
+  if(seedList.length === 0){
+    consolanteWarning.innerHTML = '<div class="warning-box">Aucune équipe non qualifiée disponible pour une consolante (toutes les équipes sont qualifiées pour le tableau principal).</div>';
+    consolanteOutput.innerHTML = '';
+    return;
+  }
+
+  let effectiveList = seedList.slice();
+  let warnHtml='';
+  if(effectiveList.length > stageSize){
+    warnHtml = `<div class="warning-box">${effectiveList.length} équipes non qualifiées pour un tableau consolante de ${stageSize} places (${stageLabel(stageSize)}). Seules les ${stageSize} premières places (classement) sont affichées ci-dessous.</div>`;
+    effectiveList = effectiveList.slice(0, stageSize);
+  } else if(effectiveList.length < stageSize){
+    warnHtml = `<div class="warning-box">${effectiveList.length} équipes disponibles pour un tableau consolante de ${stageSize} places (${stageLabel(stageSize)}) — les places restantes sont marquées BYE.</div>`;
+    while(effectiveList.length < stageSize) effectiveList.push('BYE');
+  }
+  consolanteWarning.innerHTML = warnHtml;
+
+  const order = seedOrder(stageSize);
+  const orderedSeeds = order.map(s=>effectiveList[s-1]);
+
+  const nRounds = Math.log2(stageSize);
+  let roundsHtml='';
+  let currentSize = stageSize;
+  for(let ri=0; ri<nRounds; ri++){
+    const nMatches = currentSize/2;
+    let matchesHtml='';
+    for(let mi=0; mi<nMatches; mi++){
+      const bid1 = `cbk_${currentSize}_${mi}_0`;
+      const bid2 = `cbk_${currentSize}_${mi}_1`;
+      const default1 = ri===0 ? orderedSeeds[mi*2] : '';
+      const default2 = ri===0 ? orderedSeeds[mi*2+1] : '';
+      const v1 = window.bracketStore[bid1] !== undefined ? window.bracketStore[bid1] : default1;
+      const v2 = window.bracketStore[bid2] !== undefined ? window.bracketStore[bid2] : default2;
+      matchesHtml += `
+        <div class="match-box">
+          <input type="text" class="bracket-input" data-bid="${bid1}" value="${escAttr(v1)}" placeholder="À définir">
+          <span class="vs">vs</span>
+          <input type="text" class="bracket-input" data-bid="${bid2}" value="${escAttr(v2)}" placeholder="À définir">
+        </div>`;
+    }
+    roundsHtml += `<div class="round-col"><div class="round-title">${stageLabel(currentSize)}</div>${matchesHtml}</div>`;
+    currentSize = currentSize/2;
+  }
+  const champBid = 'cbk_champion';
+  const champVal = window.bracketStore[champBid] !== undefined ? window.bracketStore[champBid] : '';
+  roundsHtml += `<div class="round-col"><div class="round-title">Vainqueur consolante</div>
+    <div class="match-box"><input type="text" class="bracket-input" data-bid="${champBid}" value="${escAttr(champVal)}" placeholder="🥈 Vainqueur"></div></div>`;
+  consolanteOutput.innerHTML = roundsHtml;
+  consolanteOutput.querySelectorAll('.bracket-input').forEach(inp=>{
+    inp.addEventListener('input', ()=>{ window.bracketStore[inp.dataset.bid] = inp.value; });
+  });
+}
+
+function fillConsolanteFromStandings(){
+  const stageSize = window.lastConsolanteStageSize;
+  if(!window.lastGroups || !stageSize) return;
+
+  const seedList = consolantePool(true);
+  if(seedList.length === 0) return; // warning already shown by renderConsolanteSkeleton
+
+  let effectiveList = seedList.slice();
+  if(effectiveList.length > stageSize){
+    effectiveList = effectiveList.slice(0, stageSize);
+  } else if(effectiveList.length < stageSize){
+    while(effectiveList.length < stageSize) effectiveList.push('BYE');
+  }
+
+  const order = seedOrder(stageSize);
+  const orderedSeeds = order.map(s=>effectiveList[s-1]);
+  orderedSeeds.forEach((name, position)=>{
+    const mi = Math.floor(position/2);
+    const slotIdx = position%2;
+    const bid = `cbk_${stageSize}_${mi}_${slotIdx}`;
+    window.bracketStore[bid] = name;
+    const el = document.querySelector(`[data-bid="${bid}"]`);
+    if(el) el.value = name;
+  });
+}
+
+// ---- save / restore the whole page state to a file ----
+function gatherInputs(){
+  return {
+    nomTournoi: document.getElementById('nomTournoi').value,
+    formatTournoi: document.getElementById('formatTournoi').value,
+    nbEquipes: document.getElementById('nbEquipes').value,
+    maxParGroupe: document.getElementById('maxParGroupe').value,
+    nbRoundsSuisse: document.getElementById('nbRoundsSuisse').value,
+    nbTerrains: document.getElementById('nbTerrains').value,
+    dureeGroupes: document.getElementById('dureeGroupes').value,
+    qualifiesParGroupe: document.getElementById('qualifiesParGroupe').value,
+    stadeDepart: document.getElementById('stadeDepart').value,
+    consolanteEnabled: document.getElementById('consolanteEnabled').value,
+    stadeDepartConsolante: document.getElementById('stadeDepartConsolante').value,
+    nomsEquipes: document.getElementById('nomsEquipes').value
+  };
+}
+
+function applyInputs(inputs){
+  if(!inputs) return;
+  ['nomTournoi','formatTournoi','nbEquipes','maxParGroupe','nbRoundsSuisse','nbTerrains','dureeGroupes','qualifiesParGroupe','stadeDepart','consolanteEnabled','stadeDepartConsolante','nomsEquipes'].forEach(id=>{
+    if(inputs[id]!==undefined) document.getElementById(id).value = inputs[id];
+  });
+  onFormatChange();
+  onConsolanteToggle();
+}
+
+function sanitizeFilename(str){
+  return String(str||'').trim()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'') // strip accents
+    .replace(/[^a-zA-Z0-9\- ]/g,'')
+    .trim().replace(/\s+/g,'-') || 'tournoi';
+}
+
+function exportState(){
+  const format = document.getElementById('formatTournoi').value;
+  const state = {
+    version: 2,
+    format,
+    savedAt: new Date().toISOString(),
+    inputs: gatherInputs(),
+    groups: (window.lastGroups||[]).map(g=>({label:g.label, teams:g.teams})),
+    scores: window.scoresStore || {},
+    bracket: window.bracketStore || {},
+    saveCounter: window.saveCounter || 0
+  };
+  if(format === 'suisse'){
+    state.swiss = {
+      rounds: window.swissRounds || [],
+      courtUsage: window.swissCourtUsage || {},
+      hadBye: Array.from(window.swissHadBye || []),
+      plannedRounds: window.swissPlannedRounds,
+      matchDuration: window.swissMatchDuration,
+      C: window.swissC
+    };
+  }
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const baseName = sanitizeFilename(document.getElementById('nomTournoi').value);
+  window.saveCounter = (window.saveCounter || 0) + 1;
+  a.href = url;
+  a.download = `${baseName}-${window.saveCounter}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function importState(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    try{
+      const state = JSON.parse(e.target.result);
+      applyInputs(state.inputs);
+      window.scoresStore = state.scores || {};
+      window.bracketStore = state.bracket || {};
+      window.saveCounter = state.saveCounter || 0;
+      window.lastGroups = (state.groups||[]).map(g=>({label:g.label, teams:(g.teams||[]).slice()}));
+      const errorBox = document.getElementById('errorBox');
+
+      if(state.format === 'suisse' && state.swiss){
+        window.tournamentFormat = 'suisse';
+        window.lastQ = parseInt(document.getElementById('qualifiesParGroupe').value);
+        window.lastStageSize = parseInt(document.getElementById('stadeDepart').value);
+        window.swissRounds = state.swiss.rounds || [];
+        window.swissCourtUsage = state.swiss.courtUsage || {};
+        window.swissHadBye = new Set(state.swiss.hadBye || []);
+        window.swissPlannedRounds = state.swiss.plannedRounds;
+        window.swissMatchDuration = state.swiss.matchDuration;
+        window.swissC = state.swiss.C;
+        if(window.lastGroups.length){
+          renderSwiss();
+          errorBox.innerHTML = '<div class="warning-box">État importé avec succès.</div>';
+        } else {
+          errorBox.innerHTML = '<div class="warning-box">Paramètres importés — cliquez sur « Tirer au sort » pour générer le round 1.</div>';
+        }
+      } else {
+        window.tournamentFormat = 'classique';
+        if(window.lastGroups.length){
+          buildScheduleAndRender();
+          errorBox.innerHTML = '<div class="warning-box">État importé avec succès.</div>';
+        } else {
+          errorBox.innerHTML = '<div class="warning-box">Paramètres importés — cliquez sur « Tirer au sort » pour générer les groupes.</div>';
+        }
+      }
+
+      if(document.getElementById('consolanteEnabled').value === 'on' && window.lastGroups.length){
+        refreshConsolanteBracket();
+      }
+    } catch(err){
+      document.getElementById('errorBox').innerHTML = '<div class="error-box">Fichier invalide, impossible de restaurer l\u2019état.</div>';
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// toggles which fields are shown depending on the chosen format, and updates
+// the live hints (number of groups / suggested number of rounds)
+function onFormatChange(){
+  const format = document.getElementById('formatTournoi').value;
+  const isClassique = format === 'classique';
+  document.getElementById('fieldMaxParGroupe').classList.toggle('hidden', !isClassique);
+  document.getElementById('fieldNbRounds').classList.toggle('hidden', isClassique);
+  document.getElementById('labelQualifies').textContent = isClassique ? 'Qualifiés par groupe' : 'Nombre de qualifiés';
+  document.getElementById('formSectionNote').textContent = isClassique
+    ? "Le nombre de groupes dépend uniquement du nombre d'équipes et de la taille max par groupe — pas du nombre de terrains."
+    : "Toutes les équipes sont dans un même classement ; chaque round les réapparie selon leurs résultats, sans répéter un même adversaire tant que possible.";
+  updateLivePreview();
+}
+
+function updateLivePreview(){
+  const N = parseInt(document.getElementById('nbEquipes').value);
+  const M = parseInt(document.getElementById('maxParGroupe').value);
+  const groupPreview = document.getElementById('groupPreview');
+  if(N>0 && M>0){
+    const G = Math.ceil(N/M);
+    groupPreview.textContent = '→ '+G+' groupe'+(G>1?'s':'')+' au tirage';
+  } else {
+    groupPreview.textContent='';
+  }
+
+  const roundsPreview = document.getElementById('roundsPreview');
+  if(N>1){
+    const suggestion = Math.max(3, Math.ceil(Math.log2(N)));
+    roundsPreview.textContent = '→ suggestion : '+suggestion+' rounds pour '+N+' équipes';
+  } else {
+    roundsPreview.textContent='';
+  }
+}
+document.getElementById('nbEquipes').addEventListener('input', updateLivePreview);
+document.getElementById('maxParGroupe').addEventListener('input', updateLivePreview);
+updateLivePreview();
+</script>
+
+</body>
+</html>

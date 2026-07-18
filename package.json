@@ -1,0 +1,18 @@
+{
+  "name": "planificateur-petanque",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Application mobile du planificateur de tournois de pétanque",
+  "scripts": {
+    "sync": "cap sync android",
+    "open:android": "cap open android",
+    "build:android": "cd android && ./gradlew assembleDebug"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/core": "^6.1.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.2"
+  }
+}
