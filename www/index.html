@@ -1491,22 +1491,28 @@ async function exportState(){
 
   if(isNativeApp){
     // inside the Android app: a plain <a download> link doesn't do anything in
-    // a WebView, so write the file with the native Filesystem plugin and hand
-    // it to the native share sheet (Drive, e-mail, Bluetooth, "Save to files"...)
+    // a WebView. Instead: (1) write a real, findable copy into the public
+    // Documents folder, and (2) also open the native share sheet — choosing
+    // "Fichiers" / "Mes fichiers" (or similar) from that menu lets the user
+    // pick or create any folder they want, which is the closest Android gets
+    // to a universal "save as" dialog from inside an app.
     try{
       const { Filesystem, Share } = window.Capacitor.Plugins;
       const result = await Filesystem.writeFile({
-        path: filename,
+        path: `PlanificateurPetanque/${filename}`,
         data: jsonStr,
-        directory: 'CACHE',
-        encoding: 'utf8'
+        directory: 'DOCUMENTS',
+        encoding: 'utf8',
+        recursive: true
       });
+      document.getElementById('errorBox').innerHTML =
+        '<div class="warning-box">Sauvegarde écrite dans Documents/PlanificateurPetanque/'+escAttr(filename)+'. Menu de partage ouvert si vous préférez l\u2019envoyer ou l\u2019enregistrer ailleurs (choisissez "Fichiers" pour sélectionner un autre dossier).</div>';
       await Share.share({
         title: filename,
         text: 'Sauvegarde du tournoi de pétanque',
         url: result.uri,
-        dialogTitle: 'Enregistrer ou envoyer la sauvegarde'
-      });
+        dialogTitle: 'Enregistrer ailleurs ou envoyer la sauvegarde'
+      }).catch(()=>{ /* user closed the share sheet without picking anything: not an error */ });
     } catch(err){
       document.getElementById('errorBox').innerHTML =
         '<div class="error-box">Échec de la sauvegarde : '+escAttr(err && err.message ? err.message : String(err))+'</div>';
