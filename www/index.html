@@ -1459,7 +1459,7 @@ function sanitizeFilename(str){
     .trim().replace(/\s+/g,'-') || 'tournoi';
 }
 
-function exportState(){
+async function exportState(){
   const format = document.getElementById('formatTournoi').value;
   const state = {
     version: 2,
@@ -1481,13 +1481,45 @@ function exportState(){
       C: window.swissC
     };
   }
-  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+
   const baseName = sanitizeFilename(document.getElementById('nomTournoi').value);
   window.saveCounter = (window.saveCounter || 0) + 1;
+  const filename = `${baseName}-${window.saveCounter}.json`;
+  const jsonStr = JSON.stringify(state, null, 2);
+
+  const isNativeApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+
+  if(isNativeApp){
+    // inside the Android app: a plain <a download> link doesn't do anything in
+    // a WebView, so write the file with the native Filesystem plugin and hand
+    // it to the native share sheet (Drive, e-mail, Bluetooth, "Save to files"...)
+    try{
+      const { Filesystem, Share } = window.Capacitor.Plugins;
+      const result = await Filesystem.writeFile({
+        path: filename,
+        data: jsonStr,
+        directory: 'CACHE',
+        encoding: 'utf8'
+      });
+      await Share.share({
+        title: filename,
+        text: 'Sauvegarde du tournoi de pétanque',
+        url: result.uri,
+        dialogTitle: 'Enregistrer ou envoyer la sauvegarde'
+      });
+    } catch(err){
+      document.getElementById('errorBox').innerHTML =
+        '<div class="error-box">Échec de la sauvegarde : '+escAttr(err && err.message ? err.message : String(err))+'</div>';
+    }
+    return;
+  }
+
+  // regular browser (or the tool used directly in Claude): classic download link
+  const blob = new Blob([jsonStr], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
   a.href = url;
-  a.download = `${baseName}-${window.saveCounter}.json`;
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   a.remove();
