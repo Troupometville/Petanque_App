@@ -23,6 +23,14 @@ jobs:
             npx cap add android
           fi
 
+      - name: Generate app icon from resources/icon.png (if present)
+        run: |
+          if [ -f "resources/icon.png" ]; then
+            npx @capacitor/assets generate --android
+          else
+            echo "Pas de resources/icon.png trouvé — icône par défaut conservée."
+          fi
+
       - name: Sync web assets into Android project
         run: npx cap sync android
 
